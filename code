@@ -1,0 +1,85 @@
+create database Db_taborda
+use Db_taborda
+
+--Questão 2 --
+CREATE TABLE veiculo (
+    codvei int PRIMARY KEY,
+    nomevei varchar (50),
+    corvei varchar (50),
+    vlrvei numeric (12, 2 ),
+    qtdevei int
+);
+
+CREATE TABLE carga (
+    codcar int PRIMARY KEY,
+    nomecar varchar (50),
+    tipocar varchar (50),
+    pesocar numeric (6,2),
+    vlrtotcar numeric (12, 2)
+);
+
+CREATE TABLE transporta (
+    fk_veiculo_codvei int FOREIGN KEY REFERENCES veiculo (codvei),
+    fk_carga_codcar int FOREIGN KEY REFERENCES carga (codcar),
+    codtra int PRIMARY KEY,
+    nometra varchar (50),
+    distanciatra numeric (6,2),
+    vlrtottra numeric (12,2)
+);
+
+select * from veiculo
+select * from carga
+select * from transporta
+
+-- Questão 3 --
+--Inserindo registros na tabela veiculo
+insert into veiculo values(20,'fiorino','branca', 55000.00, 4)
+insert into veiculo values(200,'hilux', 'preta', 100000.00, 3)
+insert into veiculo values(500,'ducato', 'azul', 45000.00, 2)
+
+--Inserindo registro na tabela carga
+insert into carga values(10,'madeira','nova', 100.00, 300.00)
+insert into carga values(20,'caixa','usada', 200.00, 1000.00)
+insert into carga values(30,'plástico','semi-nova', 300.00, 510.00)
+
+--Inserindo registro na tabela transporta
+insert into transporta values(20, 10, 520,'translegal', 200, 100.00)
+insert into transporta values(200, 20, 620,'transbom', 300, 650.00)
+insert into transporta values(500, 30, 720,'transnice', 800, 600.00)
+
+ -- Questão 4 --
+select vei.nomevei as 'Nome do veículo',trans.nometra as 'Nome da transportadora', carg.nomecar as 'Nome da carga' from carga carg
+inner join transporta trans
+on carg.codcar = trans.fk_carga_codcar
+inner join veiculo vei
+on vei.codvei = trans.fk_veiculo_codvei
+
+-- Questão 5 --
+select sum(carg.vlrtotcar) from carga carg
+inner join transporta trans
+on carg.codcar = trans.fk_carga_codcar
+inner join veiculo vei
+on vei.codvei = trans.fk_veiculo_codvei
+where vei.corvei in ('branca','azul','preta')
+and trans.vlrtottra >= 597
+
+-- Questão 6 --
+--select vlrtottra as 'Valor total do transporte atualizado'
+update transporta
+set vlrtottra = vei.qtdevei * carg.vlrtotcar
+from transporta trans
+inner join carga carg
+on carg.codcar = trans.fk_carga_codcar
+inner join veiculo vei
+on vei.codvei = trans.fk_veiculo_codvei
+where vei.codvei >18 and vei.codvei < 268
+
+-- Questão 7 -- 
+delete transporta from transporta trans
+inner join carga carg
+on carg.codcar = trans.fk_carga_codcar
+inner join veiculo vei
+on vei.codvei = trans.fk_veiculo_codvei
+where trans.distanciatra < 700 
+and carg.nomecar like '%caixa%'
+and vei.vlrvei > 45600.00
